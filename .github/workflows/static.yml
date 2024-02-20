@@ -1,48 +1,36 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+name: Build Docker and Deploy to GitHub Pages
 
 on:
-  # Runs on pushes targeting the default branch
   push:
-    branches: ["main"]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+    branches:
+      - main  # Trigger the workflow on push to main branch
 
 jobs:
-  # Single deploy job since we're just deploying
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      # Install Rust toolchain (using `actions-rs/toolchain`)
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      # Build WASM package using cargo and deploy to GitHub Pages
-      - name: Build WASM package and deploy to GitHub Pages
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build Docker image
         run: |
-          cargo build --target wasm32-unknown-unknown --release
-          cp -r target/wasm32-unknown-unknown/release/* .
-          git init
-          git add -A
-          git commit -m "Deploy to GitHub Pages"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main
+          docker build -t my-image -f build.docker .
+
+      - name: Create dist directory
+        run: mkdir dist
+
+      - name: Copy files from Docker image
+        run: |
+          docker create --name temp-container my-image
+          docker cp temp-container:/usr/src/breakout/dist ./dist
+          docker rm temp-container
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
