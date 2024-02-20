@@ -6,6 +6,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
   <title>Bevy game</title> <!-- ToDo -->
   <link data-trunk rel="copy-dir" href="assets" />
+  <script>
+    function unlockAudioContext(audioCtx) {
+      if (audioCtx.state !== 'suspended') return;
+      const b = document.body;
+      const events = ['touchstart', 'touchend', 'mousedown', 'keydown'];
+      events.forEach(e => b.addEventListener(e, unlock, false));
+      function unlock() {audioCtx.resume().then(clean);}
+      function clean() {events.forEach(e => b.removeEventListener(e, unlock));}
+    }
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    unlockAudioContext(audioCtx);
+  </script>
 </head>
 
 <body>
