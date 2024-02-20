@@ -1,6 +1,16 @@
-<link href=/style-597d90855083f957.css integrity=sha384-7GZOiJ7WwbJ2PKz3iZ2Vt_NHNz65guUjQZ_uo6o2LYkbO_Al8pImelhUBJCReJw- rel=stylesheet><link as=fetch crossorigin href=/breakout-27db63fd530c4a7f19d9609217e43141bcd3b8097236503d3c550fd6fcbb0b8032ae261833c19a749e77c51dd4391e49_bg.wasm integrity=sha384-J9tj_VMMSn8Z2WCSF-QxQbzTuAlyNlA9PFUP1vy7C4AyriYYM8GadJ53xR3UOR5J rel=preload type=application/wasm><link crossorigin href=/breakout-27db63fd530c4a7f19d9609217e43141bcd3b8097236503d3c550fd6fcbb0b8032ae261833c19a749e77c51dd4391e49.js integrity=sha384-oXQltPnG-Kvpjhs7P2zu0zCKPkCHGktYURtA7axTEiuQeFyH-QLljVr1ZWdEqGbY rel=modulepreload></head><body><script type=module>
-import init, * as bindings from '/breakout-27db63fd530c4a7f19d9609217e43141bcd3b8097236503d3c550fd6fcbb0b8032ae261833c19a749e77c51dd4391e49.js';
-init('/breakout-27db63fd530c4a7f19d9609217e43141bcd3b8097236503d3c550fd6fcbb0b8032ae261833c19a749e77c51dd4391e49_bg.wasm');
-window.wasmBindings = bindings;
+<!doctype html>
+<html lang="en">
 
-</script></body></html>
+<body style="margin: 0px;">
+  <script type="module">
+    import init from './breakout.js'
+
+    init().catch((error) => {
+      if (!error.message.startsWith("Using exceptions for control flow, don't mind me. This isn't actually an error!")) {
+        throw error;
+      }
+    });
+  </script>
+</body>
+
+</html>
