@@ -1,0 +1,19 @@
+FROM rust:latest as builder
+
+RUN rustup target add wasm32-unknown-unknown
+RUN cargo install wasm-bindgen-cli
+RUN cargo install trunk
+
+# Set working directory
+WORKDIR /usr/src/breakout
+
+# Copy source code and compile project
+COPY Cargo.toml Cargo.lock ./
+COPY src ./src
+COPY assets ./assets
+RUN cargo build --release --target wasm32-unknown-unknown
+
+# Build the dist directory
+COPY index.html ./
+COPY static ./static
+RUN trunk build

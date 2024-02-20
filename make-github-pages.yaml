@@ -1,0 +1,36 @@
+name: Build Docker and Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # Trigger the workflow on push to main branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build Docker image
+        run: |
+          docker build -t my-image -f build.docker .
+
+      - name: Create dist directory
+        run: mkdir dist
+
+      - name: Copy files from Docker image
+        run: |
+          docker create --name temp-container my-image
+          docker cp temp-container:/usr/src/breakout/dist ./dist
+          docker rm temp-container
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
