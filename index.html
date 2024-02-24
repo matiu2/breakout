@@ -7,6 +7,11 @@
   <title>Bevy game</title> <!-- ToDo -->
   <link data-trunk rel="copy-dir" href="assets" />
   <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      unlockAudioContext(audioCtx);
+    });
+
     function unlockAudioContext(audioCtx) {
       if (audioCtx.state !== 'suspended') return;
       const b = document.body;
@@ -15,8 +20,6 @@
       function unlock() {audioCtx.resume().then(clean);}
       function clean() {events.forEach(e => b.removeEventListener(e, unlock));}
     }
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    unlockAudioContext(audioCtx);
   </script>
 </head>
 
